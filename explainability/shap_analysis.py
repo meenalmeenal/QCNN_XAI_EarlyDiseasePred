@@ -10,7 +10,8 @@ def explain_mlp(model, X_train, X_test, feature_names):
     def predict(x):
         with torch.no_grad():
             t = torch.tensor(x, dtype=torch.float32)
-            return model(t).numpy()
+            out = model(t).numpy()
+            return out.reshape(-1)  # ensure shape (n,)
     
     explainer = shap.KernelExplainer(predict, X_train[:50])
     shap_values = explainer.shap_values(X_test[:20])
@@ -31,7 +32,8 @@ def explain_qnn(model, X_train, X_test, feature_names):
     def predict(x):
         with torch.no_grad():
             t = torch.tensor(x, dtype=torch.float32)
-            return model(t).numpy()
+            out = model(t).numpy()
+            return out.reshape(-1)  # ensure shape (n,)
     
     explainer = shap.KernelExplainer(predict, X_train[:50])
     shap_values = explainer.shap_values(X_test[:20])

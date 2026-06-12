@@ -48,11 +48,10 @@ class HybridQNN(nn.Module):
     
     def forward(self, x):
         x = self.pre(x)
-        # run quantum circuit for each sample
         q_out = torch.stack([
             torch.stack(quantum_circuit(x[i], self.q_weights))
             for i in range(x.shape[0])
-        ])
+        ]).float()  # add .float() here
         return self.post(q_out).squeeze()
 
 

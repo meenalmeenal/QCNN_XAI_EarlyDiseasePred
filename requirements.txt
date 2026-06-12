@@ -1,0 +1,8 @@
+pennylane==0.35.0
+torch==2.2.0
+scikit-learn
+shap
+pandas
+matplotlib
+seaborn
+numpy

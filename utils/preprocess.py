@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import os
 
 def load_heart_data():
     url = "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"
@@ -12,7 +13,7 @@ def load_heart_data():
     df.dropna(inplace=True)
     df['target'] = (df['target'] > 0).astype(int)
     
-    # save locally
+    os.makedirs('data', exist_ok=True)
     df.to_csv('data/heart.csv', index=False)
     return df
 
@@ -26,4 +27,4 @@ def preprocess(df):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
-    return X_train, X_test, y_train, y_test, scaler
+    return X_train, X_test, y_train, y_test, scaler 

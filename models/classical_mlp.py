@@ -16,14 +16,14 @@ class ClassicalMLP(nn.Module):
         )
     
     def forward(self, x):
-        return self.net(x).squeeze()
+        return self.net(x)
 
 def train_mlp(model, X_train, y_train, epochs=100, lr=0.001):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.BCELoss()
     
     X = torch.tensor(X_train, dtype=torch.float32)
-    y = torch.tensor(y_train, dtype=torch.float32)
+    y = torch.tensor(y_train, dtype=torch.float32).view(-1, 1)
     
     model.train()
     for epoch in range(epochs):
@@ -32,6 +32,8 @@ def train_mlp(model, X_train, y_train, epochs=100, lr=0.001):
         loss = criterion(out, y)
         loss.backward()
         optimizer.step()
-        if (epoch+1) % 20 == 0:
+        
+        if (epoch + 1) % 20 == 0:
             print(f"Epoch {epoch+1}/{epochs} | Loss: {loss.item():.4f}")
+            
     return model

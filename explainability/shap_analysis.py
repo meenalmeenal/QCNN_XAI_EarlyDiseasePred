@@ -10,16 +10,25 @@ def explain_mlp(model, X_train, X_test, feature_names):
     def predict(x):
         with torch.no_grad():
             t = torch.tensor(x, dtype=torch.float32)
-            out = model(t).numpy()
-            return out.reshape(-1)  # ensure shape (n,)
+            return model(t).cpu().numpy()
+            
+    explainer = shap.KernelExplainer(predict, shap.sample(X_train, 30))
+    shap_values = explainer.shap_values(X_test[:10])
     
-    explainer = shap.KernelExplainer(predict, X_train[:50])
-    shap_values = explainer.shap_values(X_test[:20])
-    
+    if isinstance(shap_values, list):
+        shap_values_to_plot = shap_values[0]
+    else:
+        shap_values_to_plot = shap_values
+        
+    if len(shap_values_to_plot.shape) == 3:
+        shap_values_to_plot = shap_values_to_plot[:, :, 0]
+    elif len(shap_values_to_plot.shape) == 2 and shap_values_to_plot.shape[1] != len(feature_names):
+        shap_values_to_plot = shap_values_to_plot.squeeze()
+
     os.makedirs('results/plots', exist_ok=True)
     
-    plt.figure()
-    shap.summary_plot(shap_values, X_test[:20],
+    plt.figure(figsize=(10, 6))
+    shap.summary_plot(shap_values_to_plot, X_test[:10],
                       feature_names=feature_names, show=False)
     plt.tight_layout()
     plt.savefig('results/plots/shap_mlp.png', dpi=150)
@@ -32,14 +41,25 @@ def explain_qnn(model, X_train, X_test, feature_names):
     def predict(x):
         with torch.no_grad():
             t = torch.tensor(x, dtype=torch.float32)
-            out = model(t).numpy()
-            return out.reshape(-1)  # ensure shape (n,)
+            return model(t).cpu().numpy()
+            
+    explainer = shap.KernelExplainer(predict, shap.sample(X_train, 30))
+    shap_values = explainer.shap_values(X_test[:10])
     
-    explainer = shap.KernelExplainer(predict, X_train[:50])
-    shap_values = explainer.shap_values(X_test[:20])
+    if isinstance(shap_values, list):
+        shap_values_to_plot = shap_values[0]
+    else:
+        shap_values_to_plot = shap_values
+        
+    if len(shap_values_to_plot.shape) == 3:
+        shap_values_to_plot = shap_values_to_plot[:, :, 0]
+    elif len(shap_values_to_plot.shape) == 2 and shap_values_to_plot.shape[1] != len(feature_names):
+        shap_values_to_plot = shap_values_to_plot.squeeze()
+        
+    os.makedirs('results/plots', exist_ok=True)
     
-    plt.figure()
-    shap.summary_plot(shap_values, X_test[:20],
+    plt.figure(figsize=(10, 6))
+    shap.summary_plot(shap_values_to_plot, X_test[:10],
                       feature_names=feature_names, show=False)
     plt.tight_layout()
     plt.savefig('results/plots/shap_qnn.png', dpi=150)

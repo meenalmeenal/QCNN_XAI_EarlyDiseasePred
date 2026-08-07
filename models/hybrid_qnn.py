@@ -57,6 +57,7 @@ def train_qnn(model, X_train, y_train, epochs=100, lr=0.01):
     X = torch.tensor(X_train, dtype=torch.float32)
     y = torch.tensor(y_train, dtype=torch.float32).view(-1, 1)
     
+    losses = []
     model.train()
     for epoch in range(epochs):
         optimizer.zero_grad()
@@ -64,8 +65,9 @@ def train_qnn(model, X_train, y_train, epochs=100, lr=0.01):
         loss = criterion(out, y)
         loss.backward()
         optimizer.step()
+        losses.append(loss.item())
         
         if (epoch + 1) % 20 == 0:
             print(f"Epoch {epoch+1}/{epochs} | Loss: {loss.item():.4f}")
             
-    return model 
+    return model, losses
